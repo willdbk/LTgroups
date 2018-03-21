@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <script src="scripts.js"></script>
+</head>
+
+<body>
+    <h1>Generate Groups</h1>
+    <div class="form-group"><span class='token' data-position='bottom'>Number of groups:</span></label>
+        <select class="form-control" id="num-groups">
+            <option selected="selected" value="2">2</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+    <div class="form-group"><span class='token' data-position='bottom'>Number of LODs on Saturday and Sunday:</span></label>
+        <select class="form-control" id="num-lods">
+            <option selected="selected" value="2">2</option>
+            <option value="4">4</option>
+            <option value="8">8</option>
+        </select>
+    </div>
+    <button type="button" onclick="generate_groups()">Generate Groups!</button>
+    <div id="groups">
+
+    </div>
+</body>
