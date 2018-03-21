@@ -16,31 +16,27 @@ var trainees = [
         "George Walker",
         "Dan Ralston"
     ];
-
+var num_groups = 0;
+var num_lods = 0;
 
 function generate_groups() {
     var num_group_form = document.getElementById("num-groups");
-    var num_groups = num_group_form.options[num_group_form.selectedIndex].value;
+    num_groups = num_group_form.options[num_group_form.selectedIndex].value;
 
     var num_lod_form = document.getElementById("num-lods");
-    var num_lods = num_lod_form.options[num_lod_form.selectedIndex].value;
+    num_lods = num_lod_form.options[num_lod_form.selectedIndex].value;
 
-    //var groups = create_groups(num_groups);
-
-    var array = [];
-    for (var i = 0; i < trainees.length; i++) {
-       array.push(i);
-    }
-    array = shuffle(array);
+    var groups = create_groups(num_groups);
 
     var groupHTML = "";
 
     for (var i = 0; i < num_groups; i++) {
         groupHTML += `<p><b>Group ${i+1}:</b></p>\n<p>`;
-        for (var j = 0; j < trainees.length/num_groups; j++) {
-            var nextTrainee = array.pop()
-            groupHTML += `${trainees[nextTrainee]}`;
-            if (j != trainees.length/num_groups - 1) {
+        var group = groups[i];
+        for (var j = 0; j < group.length; j++) {
+            var nextTrainee = trainees[group[j]];
+            groupHTML += `${nextTrainee}`;
+            if (j != group.length - 1) {
                 groupHTML += ", ";
             }
             else {
@@ -52,7 +48,7 @@ function generate_groups() {
     document.getElementById("groups").innerHTML = groupHTML;
 }
 
-//
+// returns a 2D array with num_groups # of groups
 function create_groups(num_groups) {
     var array = [];
     for (var i = 0; i < trainees.length; i++) {
@@ -62,7 +58,8 @@ function create_groups(num_groups) {
     var groups = [];
     for (var i = 0; i < num_groups; i++) {
         var group = [];
-        for (var j = 0; i < trainees.length/num_groups; i++) {
+        var num_in_group = parseInt(array.length/(num_groups-i));
+        for (var j = 0; j < num_in_group; j++) {
             group.push(array.pop());
         }
         groups.push(group);
