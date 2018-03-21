@@ -18,19 +18,23 @@ var trainees = [
     ];
 var num_groups = 0;
 var num_lods = 0;
+var groups_generated = 100;
 
-function generate_groups() {
+function read_input() {
     var num_group_form = document.getElementById("num-groups");
     num_groups = num_group_form.options[num_group_form.selectedIndex].value;
 
     var num_lod_form = document.getElementById("num-lods");
     num_lods = num_lod_form.options[num_lod_form.selectedIndex].value;
+}
+
+function generate_groups() {
+    read_input();
 
     var best_groups = create_groups();
     var best_groups_score = get_score(best_groups);
 
-
-    for (var i = 0; i < 100; i++) {
+    for (var i = 0; i < groups_generated; i++) {
         var groups = create_groups();
         var score = get_score(groups);
         if(score < best_groups_score) {
@@ -39,14 +43,13 @@ function generate_groups() {
         }
     }
 
-
     document.getElementById("groups").innerHTML = groups_toHTML(best_groups);
 
 }
 
 function get_score(groups) {
     var score = 0;
-    score += gender_score(groups);
+    score += gender_score(groups) + year_score(groups);
     return score;
 }
 
@@ -64,7 +67,26 @@ function gender_score(groups) {
                 gender_diff--;
             }
         }
-        score += Math.abs(gender_diff);
+        score += Math.pow(gender_diff, 2);
+    }
+    return score;
+}
+
+function year_score(groups) {
+    var score = 0;
+    for (var i = 0; i < groups.length; i++) {
+        var group = groups[i];
+        var year_diff = 0;
+        for(var j = 0; j < group.length; j++) {
+            var year = trainees[group[j]].year;
+            if(year == 1) {
+                year_diff++;
+            }
+            else if(year == 2) {
+                year_diff--;
+            }
+        }
+        score += Math.pow(year_diff, 2);
     }
     return score;
 }
