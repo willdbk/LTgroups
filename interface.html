@@ -1,27 +1,64 @@
 <html>
 
 <head>
-    <script src="scripts.js"></script>
+    <link rel="stylesheet" href="bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="jquery.min.js" type="text/javascript"></script>
+    <!--http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js-->
+    <script src="scripts.js"></script>
 </head>
 
 <body>
-    <h1>Generate Groups</h1>
-    <div class="form-group"><span class='token' data-position='bottom'>Number of groups:</span></label>
-        <select class="form-control" id="num-groups">
-            <option value="2">2</option>
-            <option selected="selected" value="4">4</option>
-        </select>
+    <div class="container">
+        <h1>LT Groups</h1>
+        <div class="row">
+            <div class="form-group col-sm-4"><span class='token' data-position='bottom'>Number of groups:</span></label>
+                <select class="form-control" id="num-groups">
+                    <option value="2">2</option>
+                    <option selected="selected" value="4">4</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-4"><span class='token' data-position='bottom'>Number of LODs per day (packout will always have 2):</span></label>
+                <select class="form-control" id="num-lods">
+                    <option selected="selected" value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                </select>
+            </div>
+            <div class="form-group col-sm-4"><span class='token' data-position='bottom'>Number of days (not including packout):</span></label>
+                <select class="form-control" id="num-days">
+                    <option value="1">1</option>
+                    <option selected="selected" value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+        </div>
     </div>
-    <div class="form-group"><span class='token' data-position='bottom'>Number of LODs on Saturday and Sunday:</span></label>
-        <select class="form-control" id="num-lods">
-            <option selected="selected" value="2">2</option>
-            <option value="4">4</option>
-            <option value="8">8</option>
-        </select>
-    </div>
-    <button type="button" onclick="generate_groups()">Generate Groups!</button>
-    <div id="groups">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9">
+                <h3 class="">Generate Groups</h3>
+                <div class="">
+                    <button type="button" id="generate-button">Generate Groups!</button>
+                </div>
 
+                <div id="groups">
+
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <h3 class="">Log Group</h3>
+                <div class="">
+                    <button type="button" id="log-button">Log Group</button>
+                </div>
+                <!-- popup: are you sure -->
+                <form id="logged-groups">
+
+                </form>
+                <button type="button" id="update-btn">Update Groups to Log</button>
+            </div>
+        </div>
     </div>
 </body>

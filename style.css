@@ -1,0 +1,22 @@
+.group p {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.group h4 {
+    margin-bottom: 4px;
+}
+
+h1 {
+    text-align: center;
+    color: #89CFF0;
+    background-color: black;
+}
+
+.center {
+    text-align:center;
+}
+
+.group input {
+    width: 25px;
+}
