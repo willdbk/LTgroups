@@ -1,13 +1,5 @@
 $(document).ready(function(){
-    //var test_value = document.getElementById("test_input").value;
-
-    jQuery.get("group_adj.txt", function(data) {
-        group_adj = str_to_matrix(data);
-    }, 'text');
-
-    jQuery.get("lod_adj.txt", function(data) {
-        lod_adj = str_to_matrix(data);
-    }, 'text');
+    read_adj_matrices();
 
     $("#generate-button").click(function() {
         generate_groups();
@@ -46,7 +38,30 @@ var num_days = 0;
 var groups_generated = 1000;
 var group_adj = [[]];
 var lod_adj = [[]];
-var group_to_log = [[]];
+var groups_to_log = [[]];
+
+
+function read_adj_matrices() {
+    jQuery.get("group_adj.txt", function(data) {
+        group_adj = str_to_matrix(data);
+    }, 'text');
+
+    jQuery.get("lod_adj.txt", function(data) {
+        lod_adj = str_to_matrix(data);
+    }, 'text');
+}
+
+function write_adj_matrices() {
+    /*
+    jQuery.write("group_adj.txt", function(data) {
+        data = matrix_to_str(group_adj);
+    }, 'text');
+
+    jQuery.write("lod_adj.txt", function(data) {
+        data = matrix_to_str(lod_adj);
+    }, 'text');
+    */
+}
 
 function read_input() {
     var num_group_form = document.getElementById("num-groups");
@@ -73,21 +88,69 @@ function str_to_matrix(str) {
     return matrix;
 }
 
+function matrix_to_str(matrix) {
+    var str = "";
+    for (var i = 0; i < matrix.length; i++) {
+    	var line = "";
+        for (var j = 0; j < matrix.length; j++) {
+            line += matrix[i][j];
+        }
+        str += line + '\n'
+    }
+    return str;
+}
+
 //
 function update_logged_groups() {
-    for(var i = 0; i < group_to_log.length; i++) {
-        for(var j = 0; j < group_to_log[i].length; j++) {
-            var trainee_id = `trainee${i}${j}`;
-            var form = document.getElementById("logged-groups");
-            var trainee = form[i*num_groups+j].value;
-            group_to_log[i][j] = trainee;
+    for(var i = 0; i < groups_to_log.length; i++) {
+        for(var j = 0; j < groups_to_log[i].length; j++) {
+            var form = document.getElementById(`log-group${i}`);
+            var trainee = form[j].value;
+            if(trainee >= 0 && trainee < trainees.length) {
+                groups_to_log[i][j] = trainee;
+            }
         }
     }
 }
 
-// updates txt files based on value of group_to_log
+// updates adj matrices and writes to txt files based on value of groups_to_log
 function log_group() {
+    update_adj_matrices();
+    console.log(group_adj);
+    console.log(lod_adj);
+    write_adj_matrices();
+}
 
+function update_adj_matrices() {
+    update_group_matrix();
+    update_lod_matrix();
+}
+
+function update_group_matrix() {
+    for (var i = 0; i < groups_to_log.length; i++) {
+        var group = groups_to_log[i];
+        for(var j = 0; j < group.length; j++) {
+            for (var k = j+1; k < group.length; k++) {
+                group_adj[group[j]][group[k]]++;
+                group_adj[group[k]][group[j]]++;
+            }
+        }
+    }
+}
+
+function update_lod_matrix() {
+    for (var i = 0; i < groups_to_log.length; i += 2) {
+        var group = groups_to_log[i];
+        for(var j = 0; j < group.length; j++) {
+            if(is_leader(i,j,group)) {
+                //increments entries in lod_adj
+                var lod = group[j];
+                var lod_co = groups_to_log[i+1][j];
+                lod_adj[lod][lod_co]++;
+                lod_adj[lod_co][lod]++;
+            }
+        }
+    }
 }
 
 function generate_groups() {
@@ -108,14 +171,15 @@ function generate_groups() {
 
     document.getElementById("groups").innerHTML = groups_toHTML(best_groups);
 
-    group_to_log = best_groups;
+    groups_to_log = best_groups;
 
     logged_groups_updateHTML();
+    $("#log-btns").show();
 
 }
 
 function logged_groups_updateHTML() {
-    document.getElementById("logged-groups").innerHTML = logged_groups_toHTML(group_to_log);
+    document.getElementById("logged-groups").innerHTML = logged_groups_toHTML(groups_to_log);
 }
 
 function get_score(groups) {
@@ -160,7 +224,7 @@ function group_score(groups) {
         var group = groups[i];
         var same_group_count = 0;
         for(var j = 0; j < group.length; j++) {
-            for (var k = j; k < group.length; k++) {
+            for (var k = j+1; k < group.length; k++) {
                 same_group_count += group_adj[group[j]][group[k]];
             }
         }
@@ -236,7 +300,7 @@ function logged_groups_toHTML(groups) {
     var groupHTML = '';
 
     for (var i = 0; i < num_groups; i++) {
-        groupHTML += `<div class="group">\n`;
+        groupHTML += `<form id="log-group${i}"class="group">\n`;
         groupHTML += `<h4>Group ${i+1}:</h4>\n`;
         var group = groups[i];
         for (var j = 0; j < group.length; j++) {
@@ -252,7 +316,7 @@ function logged_groups_toHTML(groups) {
             }
             groupHTML += "</p>";
         }
-        groupHTML += `</div>`;
+        groupHTML += `</form>`;
     }
     groupHTML += '';
     return groupHTML;

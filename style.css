@@ -20,3 +20,7 @@ h1 {
 .group input {
     width: 25px;
 }
+
+#log-btns {
+    display: none;
+}
