@@ -17,7 +17,7 @@ $(document).ready(function(){
 var trainees = [
         {name:"Jaya Blanchard", gender:"f", year:1},
         {name:"Eleanor Mildenstein", gender:"f", year:1},
-        {name:"Amanda Bansiak", gender:"f", year:2},
+        {name:"Amanda Banasiak", gender:"f", year:2},
         {name:"Kim Hancock", gender:"f", year:1},
         {name:"Tashi Brundige", gender:"f", year:1},
         {name:"Aida Muratoglu", gender:"f", year:1},
@@ -62,7 +62,7 @@ function generate_groups() {
     var best_groups_score = get_score(best_groups);
 
     for (var i = 0; i < groups_to_generate; i++) {
-        var groups = shuffle(best_groups);
+        var groups = create_groups();
         var score = get_score(groups);
         if(score < best_groups_score) {
             best_groups = groups;
@@ -268,6 +268,7 @@ function create_groups() {
     for (var i = 0; i < trainees.length; i++) {
        array.push(i);
     }
+    array = shuffle(array);
     var groups = [];
     for (var i = 0; i < num_groups; i++) {
         var group = [];
