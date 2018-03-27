@@ -5,7 +5,9 @@ $(document).ready(function(){
         generate_groups();
     });
     $("#log-button").click(function() {
-        log_group();
+        if(confirm("Are you sure? (This will permanently be stored in the server group history)")) {
+            log_groups();
+        }
     });
     $("#update-btn").click(function() {
         update_logged_groups();
@@ -41,18 +43,6 @@ var lod_adj = [[]];
 var groups_to_log = [[]];
 
 
-// initializes adj matrices based on txt files
-function read_adj_matrices() {
-    jQuery.get("group_adj.txt", function(data) {
-        group_adj = str_to_matrix(data);
-    }, 'text');
-
-    jQuery.get("lod_adj.txt", function(data) {
-        lod_adj = str_to_matrix(data);
-    }, 'text');
-}
-
-
 // generates an optimal grouping based on SCORING
 // and displays an HTML rendering of this grouping
 function generate_groups() {
@@ -62,7 +52,7 @@ function generate_groups() {
     var best_groups_score = get_score(best_groups);
 
     for (var i = 0; i < groups_to_generate; i++) {
-        var groups = shuffle(best_groups);
+        var groups = create_groups();
         var score = get_score(groups);
         if(score < best_groups_score) {
             best_groups = groups;
@@ -75,30 +65,8 @@ function generate_groups() {
 
     logged_groups_updateHTML(groups_to_log);
     $("#log-btns").show();
-
 }
 
-// updates adj matrices and writes to txt files based on value of groups_to_log
-function log_group() {
-    update_adj_matrices();
-    console.log(group_adj);
-    console.log(lod_adj);
-    write_adj_matrices();
-}
-
-
-// writes to txt files based on groups_to_log
-function write_adj_matrices() {
-    /*
-    jQuery.write("group_adj.txt", function(data) {
-        data = matrix_to_str(group_adj);
-    }, 'text');
-
-    jQuery.write("lod_adj.txt", function(data) {
-        data = matrix_to_str(lod_adj);
-    }, 'text');
-    */
-}
 
 // reads the user input from the 3 primary form elements
 function read_input() {
@@ -125,7 +93,37 @@ function update_logged_groups() {
     }
 }
 
+// updates adj matrices and writes to txt files based on value of groups_to_log
+function log_groups() {
+    update_adj_matrices();
+    console.log(group_adj);
+    console.log(lod_adj);
+    write_adj_matrices();
+}
 
+// initializes adj matrices based on txt files
+function read_adj_matrices() {
+    jQuery.get("group_adj.txt", function(data) {
+        group_adj = str_to_matrix(data);
+    }, 'text');
+
+    jQuery.get("lod_adj.txt", function(data) {
+        lod_adj = str_to_matrix(data);
+    }, 'text');
+}
+
+// writes to txt files based on groups_to_log
+function write_adj_matrices() {
+    /*
+    $.ajax({
+      url: "page.php",
+      type: 'POST',
+      txt_file : "group_adj.txt"
+      data: matrix_to_str(group_adj),
+      processData: false
+    });
+    */
+}
 
 // updates lod_adj and group_adj based on groups_to_log
 function update_adj_matrices() {
@@ -154,9 +152,16 @@ function update_lod_matrix() {
             if(is_leader(groups_to_log, i, j)) {
                 //increments entries in lod_adj
                 var lod = group[j];
-                var lod_co = groups_to_log[i+1][j];
-                lod_adj[lod][lod_co]++;
-                lod_adj[lod_co][lod]++;
+                if(num_lods/num_groups == 2 && j%2==0) {
+                    var lod_co = groups_to_log[i][j+1];
+                    lod_adj[lod][lod_co]++;
+                    lod_adj[lod_co][lod]++;
+                }
+                else if (i%2==0) {
+                    var lod_co = groups_to_log[i+1][j];
+                    lod_adj[lod][lod_co]++;
+                    lod_adj[lod_co][lod]++;
+                }
             }
         }
     }
@@ -268,6 +273,7 @@ function create_groups() {
     for (var i = 0; i < trainees.length; i++) {
        array.push(i);
     }
+    array = shuffle(array);
     var groups = [];
     for (var i = 0; i < num_groups; i++) {
         var group = [];
@@ -327,7 +333,13 @@ function lod_score(groups) {
                     lod_reps += lod_adj[lod][k];
                 }
                 //checks if repeat LOD pair
-                if(i%2==0) {
+                if(num_lods/num_groups == 2 && j%2==0) {
+                    var lod_co = groups[i][j+1];
+                    if(lod_adj[lod][lod_co] >= 1) {
+                        score += 100;
+                    }
+                }
+                else if(i%2==0) {
                     var lod_co = groups[i+1][j];
                     if(lod_adj[lod][lod_co] >= 1) {
                         score += 100;
