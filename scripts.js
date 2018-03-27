@@ -114,15 +114,21 @@ function read_adj_matrices() {
 
 // writes to txt files based on groups_to_log
 function write_adj_matrices() {
-    /*
     $.ajax({
       url: "page.php",
-      type: 'POST',
-      txt_file : "group_adj.txt"
+      type: "POST",
+      txt_file : "group_adj.txt",
       data: matrix_to_str(group_adj),
       processData: false
     });
-    */
+
+    $.ajax({
+      url: "page.php",
+      type: "POST",
+      txt_file : "lod_adj.txt",
+      data: matrix_to_str(lod_adj),
+      processData: false
+    });
 }
 
 // updates lod_adj and group_adj based on groups_to_log
