@@ -19,7 +19,7 @@ $(document).ready(function(){
 var trainees = [
         {name:"Jaya Blanchard", gender:"f", year:1},
         {name:"Eleanor Mildenstein", gender:"f", year:1},
-        {name:"Amanda Bansiak", gender:"f", year:2},
+        {name:"Amanda Banasiak", gender:"f", year:2},
         {name:"Kim Hancock", gender:"f", year:1},
         {name:"Tashi Brundige", gender:"f", year:1},
         {name:"Aida Muratoglu", gender:"f", year:1},
